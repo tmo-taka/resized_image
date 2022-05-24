@@ -1,6 +1,9 @@
 const jimp = require("jimp");
+const sharp = require("sharp");
 // 「process.argv[2]」に、引数として指定する変換対象ファイル名が渡される。
-async function main() {
+
+async function main(type,number) {
+    console.log(type,number)
     // ファイル読み込み
     const image = await jimp.read('img/logo.jpg');
 
@@ -15,8 +18,10 @@ async function main() {
     let centerPosionX = (backImage.bitmap.width - image.bitmap.width) / 2
 
     await backImage.blit(image,centerPosionX,0);
-    console.log(backImage)
-    await backImage.writeAsync('img/back.jpg')
+    await backImage.writeAsync('img/dummy.png')
+    await sharp('img/dummy.png')
+            .toFormat("gif")
+            .toFile('img/' + number + '.gif');
 }
 
 function createBackImage(x, y) {
@@ -25,4 +30,9 @@ function createBackImage(x, y) {
     });
 }
 
-main();
+// NOTE: 引数取得
+const args = process.argv.slice(2)
+// NOTE: 引数を関数に渡す
+if(args[0] && args[1]){
+    main(type=args[0],number=args[1]);
+}
