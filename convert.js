@@ -20,11 +20,11 @@ async function main(type,number) {
         const backImage_small = createBackImage(50,25)
 
         //TODO: 画像の長さを見て、長さに合わせて、どちらをautoにするか決める必要あり
-        const centerPosionX_noraml = (backImage_normal.bitmap.width - image_normal.bitmap.width) / 2
-        const centerPosionX_small = (backImage_small.bitmap.width - image_small.bitmap.width) / 2
+        await putLogo(backImage_normal,image_normal);
+        await putLogo(backImage_small,image_small);
 
-        await outputLogo(backImage_normal,image_normal,centerPosionX_noraml,'normal')
-        await outputLogo(backImage_small,image_small,centerPosionX_small,'small')
+        await outputLogo(backImage_normal,'normal')
+        await outputLogo(backImage_small,'small')
 }
 
 function createBackImage(x, y) {
@@ -45,7 +45,21 @@ async function logo_resize(logo,size){
     }
 }
 
-async function outputLogo(back,logo,position,type){
+async function putLogo(back,logo){
+    const height = logo.bitmap.height
+    const backHeight = back.bitmap.height
+    if(height == backHeight){
+        const centerPosion = (back.bitmap.width - logo.bitmap.width) / 2;
+        await back.blit(logo,centerPosion,0);
+    }else {
+        const centerPosion = (back.bitmap.height - logo.bitmap.height) / 2;
+        await back.blit(logo,0,centerPosion);
+    }
+}
+
+async function outputLogo(back,type){
+    // TODO: 別関数にした方が良いかも　どっちの比率が大きかによって変わってくる
+    // ここから
     var name
     switch(type){
         case 'small':
@@ -54,7 +68,6 @@ async function outputLogo(back,logo,position,type){
         default:
             name = 'logo';
     }
-    await back.blit(logo,position,0);
     await back.writeAsync('img/' + number + '_' + name +'.png')
     await sharp('img/' + number + '_' + name +'.png')
             .toFormat("gif")
