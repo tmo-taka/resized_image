@@ -6,12 +6,14 @@ async function main(type,number) {
     console.log(type,number)
     // ファイル読み込み
     if(type == "HIKKOSHI"){
+        // TODO: 拡張子対応しなければ
         const image = await jimp.read('img/logo.jpg');
         const image_2 = await jimp.read('img/logo.jpg');
 
         const image_normal = await logo_resize(image,[60,30]);
         const image_small = await logo_resize(image_2,[50,25]);
-        // 画像サイズを取得
+
+        // TODO: 拡張子対応しなければ
         await image_normal.writeAsync('img/image_normal.jpg');
         await image_small.writeAsync('img/image_small.jpg');
 
@@ -58,8 +60,6 @@ async function putLogo(back,logo){
 }
 
 async function outputLogo(back,type){
-    // TODO: 別関数にした方が良いかも　どっちの比率が大きかによって変わってくる
-    // ここから
     var name
     switch(type){
         case 'small':
