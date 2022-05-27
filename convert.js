@@ -1,21 +1,41 @@
 const jimp = require("jimp");
 const sharp = require("sharp");
+const fs = require('fs');
+import {isNotJunk} from 'junk';
+const pdfToPng = require('pdf-to-png-converter')
 // 「process.argv[2]」に、引数として指定する変換対象ファイル名が渡される。
 
 async function main(type,number) {
     console.log(type,number)
+    const logoDirectory = './img/logo' 
+    let files = fs.readdirSync(logoDirectory)
+    let file = files.filter(isNotJunk)[0]
+    console.log(file);
+    let extend = file[0].split(".").pop();
+
+    if(extend === "pdf"){
+        //NOTE: PDFの場合はPNGに変換する
+        const filePath = logoDirectory + '/' + file;
+        console.log(filePath);
+        await pdfToPng(filePath ,{
+            outputFolder: logoDirectory,
+        })
+        file.replace('pdf','png');
+        extend = 'png'
+
+    }
     // ファイル読み込み
     if(type == "HIKKOSHI"){
         // TODO: 拡張子対応しなければ
-        const image = await jimp.read('img/logo.jpg');
-        const image_2 = await jimp.read('img/logo.jpg');
+        const image = await jimp.read(logoDirectory + '/' + file);
+        const image_2 = await jimp.read(logoDirectory + '/' + file);
 
         const image_normal = await logo_resize(image,[60,30]);
         const image_small = await logo_resize(image_2,[50,25]);
 
         // TODO: 拡張子対応しなければ
-        await image_normal.writeAsync('img/image_normal.jpg');
-        await image_small.writeAsync('img/image_small.jpg');
+        await image_normal.writeAsync('img/image_normal.' + extend);
+        await image_small.writeAsync('img/image_small.'+ extend);
 
         // 背景の余白を作成
         const backImage_normal = createBackImage(60,30)
@@ -71,7 +91,7 @@ async function outputLogo(back,type){
     await back.writeAsync('img/' + number + '_' + name +'.png')
     await sharp('img/' + number + '_' + name +'.png')
             .toFormat("gif")
-            .toFile('img/' + number + '_' + name +'.gif');
+            .toFile('img/output/' + number + '_' + name +'.gif');
     }
 }
 
