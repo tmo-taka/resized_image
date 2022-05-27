@@ -1,8 +1,8 @@
-const jimp = require("jimp");
-const sharp = require("sharp");
-const fs = require('fs');
+import jimp from 'jimp';
+import sharp from 'sharp'
+import * as fs from 'fs';
 import {isNotJunk} from 'junk';
-const pdfToPng = require('pdf-to-png-converter')
+import {pdfToPng} from 'pdf-to-png-converter';
 // 「process.argv[2]」に、引数として指定する変換対象ファイル名が渡される。
 
 async function main(type,number) {
@@ -10,18 +10,18 @@ async function main(type,number) {
     const logoDirectory = './img/logo' 
     let files = fs.readdirSync(logoDirectory)
     let file = files.filter(isNotJunk)[0]
-    console.log(file);
-    let extend = file[0].split(".").pop();
+    let extend = file.split(".").pop();
 
     if(extend === "pdf"){
         //NOTE: PDFの場合はPNGに変換する
         const filePath = logoDirectory + '/' + file;
         console.log(filePath);
-        await pdfToPng(filePath ,{
+        const img = await pdfToPng(filePath ,{
             outputFolder: logoDirectory,
         })
         file.replace('pdf','png');
         extend = 'png'
+        console.log(img);
 
     }
     // ファイル読み込み
@@ -99,5 +99,5 @@ async function outputLogo(back,type){
 const args = process.argv.slice(2)
 // NOTE: 引数を関数に渡す
 if(args[0] && args[1]){
-    main(type=args[0],number=args[1]);
+    main(args[0],args[1]);
 }
