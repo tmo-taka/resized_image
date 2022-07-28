@@ -58,7 +58,9 @@ function createBackImage(x, y) {
 async function logo_resize(logo,size){
     const width = logo.bitmap.width
     const height = logo.bitmap.height
-    if(width > height){
+    const widthAbsolute = Math.abs(width- size[0]);
+    const heighAbsolute = Math.abs(height- size[1]);
+    if(widthAbsolute > heighAbsolute){
         const image = await logo.resize(size[0], jimp.AUTO);
         return image
     }else {
@@ -70,6 +72,7 @@ async function logo_resize(logo,size){
 async function putLogo(back,logo){
     const height = logo.bitmap.height
     const backHeight = back.bitmap.height
+
     if(height == backHeight){
         const centerPosion = (back.bitmap.width - logo.bitmap.width) / 2;
         await back.blit(logo,centerPosion,0);
