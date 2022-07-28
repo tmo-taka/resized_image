@@ -27,11 +27,10 @@ async function main(type,number) {
     // ファイル読み込み
     if(type == "HIKKOSHI"){
         // TODO: 拡張子対応しなければ
-        const image = await jimp.read(logoDirectory + '/' + file);
-        const image_2 = await jimp.read(logoDirectory + '/' + file);
+        const image = await createOriginLogo(2,logoDirectory,file)
 
-        const image_normal = await logo_resize(image,[60,30]);
-        const image_small = await logo_resize(image_2,[50,25]);
+        const image_normal = await logo_resize(image[0],[60,30]);
+        const image_small = await logo_resize(image[1],[50,25]);
 
         // TODO: 拡張子対応しなければ
         await image_normal.writeAsync('img/image_normal.' + extend);
@@ -47,6 +46,14 @@ async function main(type,number) {
 
         await outputLogo(backImage_normal,'normal')
         await outputLogo(backImage_small,'small')
+}
+
+async function createOriginLogo(number=2,logoDirectory,file) {
+    const img = [];
+    for (let i=0; i<number; i++ ){
+        img[i] = await jimp.read(logoDirectory + '/' + file)
+    }
+    return img;
 }
 
 function createBackImage(x, y) {
