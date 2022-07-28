@@ -35,20 +35,16 @@ async function main(type,number) {
         // TODO: 拡張子対応しなければ
         const image = await createOriginLogo(2,logoDirectory,file)
 
-        const image_normal = await resize_writen(image[0],'normal',extend)
-        const image_small = await resize_writen(image[1],'small',extend)
-
-        // 背景の余白を作成
-        const backImage_normal = createBackImage(60,30)
-        const backImage_small = createBackImage(50,25)
+        const normal = await resize_writen(image[0],'normal',extend)
+        const small = await resize_writen(image[1],'small',extend)
 
         //TODO: 画像の長さを見て、長さに合わせて、どちらをautoにするか決める必要あり
-        await putLogo(backImage_normal,image_normal);
-        await putLogo(backImage_small,image_small);
+        await putLogo(normal.back,normal.image);
+        await putLogo(small.back,small.image);
 
-        await outputLogo(backImage_normal,'normal')
-        await outputLogo(backImage_small,'small')
-}
+        await outputLogo(normal.back,'normal')
+        await outputLogo(small.back,'small')
+    }
 
 async function createOriginLogo(number=2,logoDirectory,file) {
     const img = [];
@@ -66,9 +62,12 @@ function createBackImage(x, y) {
 
 async function resize_writen(logo,key,extend) {
     const {width,height} = sizeMap.get(key);
+    //対象画像
     const image = await logo_resize(logo,{width,height});
-    await image.writeAsync(`img/image_%{key}` + extend);
-    return image;
+    //背景作成
+    const back = await createBackImage(width,height)
+    await image.writeAsync(`img/image_${key}` +'.' + extend);
+    return {image, back};
 }
 
 async function logo_resize(logo,size){
