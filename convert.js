@@ -5,6 +5,12 @@ import {isNotJunk} from 'junk';
 import {pdfToPng} from 'pdf-to-png-converter';
 // 「process.argv[2]」に、引数として指定する変換対象ファイル名が渡される。
 
+// サイズ表のマップ
+var sizeMap = new Map
+sizeMap.set('normal',{width: 60, height:30});
+sizeMap.set('small',{width: 50, height:25})
+sizeMap.set('big',{width: 120, height:60})
+
 async function main(type,number) {
     console.log(type,number)
     const logoDirectory = './img/logo' 
@@ -29,12 +35,8 @@ async function main(type,number) {
         // TODO: 拡張子対応しなければ
         const image = await createOriginLogo(2,logoDirectory,file)
 
-        const image_normal = await logo_resize(image[0],[60,30]);
-        const image_small = await logo_resize(image[1],[50,25]);
-
-        // TODO: 拡張子対応しなければ
-        await image_normal.writeAsync('img/image_normal.' + extend);
-        await image_small.writeAsync('img/image_small.'+ extend);
+        const image_normal = await resize_writen(image[0],'normal',extend)
+        const image_small = await resize_writen(image[1],'small',extend)
 
         // 背景の余白を作成
         const backImage_normal = createBackImage(60,30)
@@ -62,16 +64,24 @@ function createBackImage(x, y) {
     });
 }
 
+async function resize_writen(logo,key,extend) {
+    const {width,height} = sizeMap.get(key);
+    const image = await logo_resize(logo,{width,height});
+    await image.writeAsync(`img/image_%{key}` + extend);
+    return image;
+}
+
 async function logo_resize(logo,size){
-    const width = logo.bitmap.width
-    const height = logo.bitmap.height
-    const widthAbsolute = Math.abs(width- size[0]);
-    const heighAbsolute = Math.abs(height- size[1]);
+    const {width, height} = size
+    const logoWidth = logo.bitmap.width
+    const logoHeight = logo.bitmap.height
+    const widthAbsolute = Math.abs(logoWidth- width);
+    const heighAbsolute = Math.abs(logoHeight- height);
     if(widthAbsolute > heighAbsolute){
-        const image = await logo.resize(size[0], jimp.AUTO);
+        const image = await logo.resize(width, jimp.AUTO);
         return image
     }else {
-        const image = await logo.resize(jimp.AUTO, size[1]);
+        const image = await logo.resize(jimp.AUTO, height);
         return image
     }
 }
