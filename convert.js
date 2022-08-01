@@ -11,12 +11,19 @@ sizeMap.set('normal',{width: 60, height:30});
 sizeMap.set('small',{width: 50, height:25})
 sizeMap.set('big',{width: 120, height:60})
 
-async function main(type,number) {
+async function main(type,number,trim=false) {
     console.log(type,number)
     const logoDirectory = './img/logo' 
     let files = fs.readdirSync(logoDirectory)
     let file = files.filter(isNotJunk)[0]
     let extend = file.split(".").pop();
+    console.log(file)
+    if(trim){
+        await sharp(logoDirectory+ '/' + file)
+            .trim()
+            .toFile(logoDirectory+ '/' + `tirm.${extend}`);
+        file=`tirm.${extend}`;
+    }
 
     if(extend === "pdf"){
         //NOTE: PDFの場合はPNGに変換する
@@ -116,7 +123,10 @@ async function outputLogo(back,type){
 
 // NOTE: 引数取得
 const args = process.argv.slice(2)
+console.log(args)
 // NOTE: 引数を関数に渡す
-if(args[0] && args[1]){
+if(args[0] && args[1] && args[2]){
+    main(args[0],args[1],args[2]);
+}else if(args[0] && args[1] && !args[2]){
     main(args[0],args[1]);
 }
