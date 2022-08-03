@@ -49,8 +49,26 @@ async function main(type,number,trim=false) {
         await putLogo(normal.back,normal.image);
         await putLogo(small.back,small.image);
 
-        await outputLogo(normal.back,'normal')
-        await outputLogo(small.back,'small')
+        await outputLogo(normal.back,'normal',type)
+        await outputLogo(small.back,'small',type)
+    }
+
+    else if(type == "PIANO"){
+        // TODO: 拡張子対応しなければ
+        const image = await createOriginLogo(3,logoDirectory,file)
+
+        const normal = await resize_writen(image[0],'normal',extend)
+        const small = await resize_writen(image[1],'small',extend)
+        const big = await resize_writen(image[2],'big',extend)
+
+        //TODO: 画像の長さを見て、長さに合わせて、どちらをautoにするか決める必要あり
+        await putLogo(normal.back,normal.image);
+        await putLogo(small.back,small.image);
+        await putLogo(big.back,big.image);
+
+        await outputLogo(normal.back,'normal',type)
+        await outputLogo(small.back,'small',type)
+        await outputLogo(big.back,'big',type)
     }
 
 async function createOriginLogo(number=2,logoDirectory,file) {
@@ -105,14 +123,27 @@ async function putLogo(back,logo){
     }
 }
 
-async function outputLogo(back,type){
+async function outputLogo(back,size,type){
     var name
-    switch(type){
-        case 'small':
-            name = 'logo_s';
-            break;
-        default:
-            name = 'logo';
+    if(type === "HIKKOSHI"){
+        switch(size){
+            case 'small':
+                name = 'logo_s';
+                break;
+            default:
+                name = 'logo';
+        }
+    }else if(type === "PIANO"){
+        switch(size){
+            case 'small':
+                name = 'logo_ss';
+                break;
+            case 'normal':
+                name = 'logo_s';
+                break;
+            default:
+                name = 'logo';
+        }
     }
     await back.writeAsync('img/' + number + '_' + name +'.png')
     await sharp('img/' + number + '_' + name +'.png')
