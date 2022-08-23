@@ -80,12 +80,14 @@ async function createOriginLogo(number=2,logoDirectory,file) {
 }
 
 function createBackImage(x, y) {
+    // NOTE: 白の背景画像の生成する関数
     return new jimp(x, y, '#FFFFFF', (err, backImage) => {
         return backImage
     });
 }
 
 async function resize_writen(logo,key,extend) {
+    // NOTE: リサイズデータおよび背景画像のデータを返す関数
     const {width,height} = sizeMap.get(key);
     //対象画像
     const image = await logo_resize(logo,{width,height});
@@ -96,6 +98,7 @@ async function resize_writen(logo,key,extend) {
 }
 
 async function logo_resize(logo,size){
+    // NOTE:対象画像、幅たかさの絶対値を用いてリサイズする関数
     const {width, height} = size
     const logoWidth = logo.bitmap.width
     const logoHeight = logo.bitmap.height
@@ -111,6 +114,7 @@ async function logo_resize(logo,size){
 }
 
 async function putLogo(back,logo){
+    // NOTE:背景画像の中央に対象画像を配置する関数
     const height = logo.bitmap.height
     const backHeight = back.bitmap.height
 
@@ -124,6 +128,7 @@ async function putLogo(back,logo){
 }
 
 async function outputLogo(back,size,type){
+    // NOTE: 画像を書き出す関数
     var name
     if(type === "HIKKOSHI"){
         switch(size){
