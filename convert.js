@@ -80,6 +80,7 @@ async function createOriginLogo(number=2,logoDirectory,file) {
 }
 
 function createBackImage(x, y) {
+    // NOTE: 白の背景画像の生成する関数
     return new jimp(x, y, '#FFFFFF', (err, backImage) => {
         return backImage
     });
@@ -111,6 +112,7 @@ async function logo_resize(logo,size){
 }
 
 async function putLogo(back,logo){
+    // NOTE:背景画像の中央に対象画像を配置する関数
     const height = logo.bitmap.height
     const backHeight = back.bitmap.height
 
