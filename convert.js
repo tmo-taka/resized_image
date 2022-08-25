@@ -87,7 +87,6 @@ function createBackImage(x, y) {
 }
 
 async function resize_writen(logo,key,extend) {
-    // NOTE: リサイズデータおよび背景画像のデータを返す関数
     const {width,height} = sizeMap.get(key);
     //対象画像
     const image = await logo_resize(logo,{width,height});
@@ -98,7 +97,6 @@ async function resize_writen(logo,key,extend) {
 }
 
 async function logo_resize(logo,size){
-    // NOTE:対象画像、幅たかさの絶対値を用いてリサイズする関数
     const {width, height} = size
     const logoWidth = logo.bitmap.width
     const logoHeight = logo.bitmap.height
@@ -128,7 +126,6 @@ async function putLogo(back,logo){
 }
 
 async function outputLogo(back,size,type){
-    // NOTE: 画像を書き出す関数
     var name
     if(type === "HIKKOSHI"){
         switch(size){
