@@ -26,7 +26,7 @@ async function main(type,number,trim=false) {
     }
 
     if(extend === "pdf"){
-        //NOTE: PDFの場合はPNGに変換する
+        //TODO: PDFの場合はPNGに変換する処理を加える
         const filePath = logoDirectory + '/' + file;
         const img = await pdfToPng(filePath ,{
             outputFolder: logoDirectory,
