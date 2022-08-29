@@ -28,7 +28,6 @@ async function main(type,number,trim=false) {
     if(extend === "pdf"){
         //NOTE: PDFの場合はPNGに変換する
         const filePath = logoDirectory + '/' + file;
-        console.log(filePath);
         const img = await pdfToPng(filePath ,{
             outputFolder: logoDirectory,
         })
@@ -96,13 +95,35 @@ async function resize_writen(logo,key,extend) {
     return {image, back};
 }
 
+function judgeConvert(logo,size) {
+    //NOTE: サイズ変換するものよりもwidth,heightで小さいものがあるかの判断
+    //HACK: この処理によっては基準にするべきwidthとheightが反転するので特に動かさないこと
+    const {logoWidth,logoHeight} = logo;
+    const {width, height} = size
+
+    if(width >= logoWidth || height >= logoHeight){
+        return true
+    }else {
+        return false
+    }
+}
+
 async function logo_resize(logo,size){
     const {width, height} = size
     const logoWidth = logo.bitmap.width
     const logoHeight = logo.bitmap.height
     const widthAbsolute = Math.abs(logoWidth- width);
     const heighAbsolute = Math.abs(logoHeight- height);
-    if(widthAbsolute > heighAbsolute){
+    const judge = judgeConvert({logoWidth,logoHeight},{width, height})
+
+    if(widthAbsolute > heighAbsolute && !judge){
+        const image = await logo.resize(jimp.AUTO, height);
+        return image
+    }else if(widthAbsolute < heighAbsolute && !judge){
+        const image = await logo.resize(width, jimp.AUTO);
+        return image
+    }
+    else if(widthAbsolute > heighAbsolute && judge){
         const image = await logo.resize(width, jimp.AUTO);
         return image
     }else {
