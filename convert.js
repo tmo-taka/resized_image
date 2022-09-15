@@ -14,10 +14,9 @@ sizeMap.set('big',{width: 120, height:60})
 async function main(type,number,trim=false) {
     console.log(type,number)
     const logoDirectory = './img/logo'
-    let files = fs.readdirSync(logoDirectory)
+    let files = fs.readdirSync(logoDirectory).filter(file => file !=='.gitkeep');
     let file = files.filter(isNotJunk)[0]
     let extend = file.split(".").pop();
-    console.log(file)
     if(trim){
         await sharp(logoDirectory+ '/' + file)
             .trim()
