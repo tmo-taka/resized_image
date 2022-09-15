@@ -13,7 +13,7 @@ sizeMap.set('big',{width: 120, height:60})
 
 async function main(type,number,trim=false) {
     console.log(type,number)
-    const logoDirectory = './img/logo' 
+    const logoDirectory = './img/logo'
     let files = fs.readdirSync(logoDirectory)
     let file = files.filter(isNotJunk)[0]
     let extend = file.split(".").pop();
@@ -25,16 +25,19 @@ async function main(type,number,trim=false) {
         file=`tirm.${extend}`;
     }
 
+    async function toPDF(filePath,logoDirectory) {
+        await pdfToPng(filePath ,{
+            outputFolder: logoDirectory,
+        })
+    }
+
     if(extend === "pdf"){
         //TODO: PDFの場合はPNGに変換する処理を加える
         const filePath = logoDirectory + '/' + file;
-        const img = await pdfToPng(filePath ,{
-            outputFolder: logoDirectory,
-        })
-        file.replace('pdf','png');
-        extend = 'png'
-        console.log(img);
-
+        toPDF(filePath,logoDirectory)
+        // file.replace('pdf','png');
+        // extend = 'png'
+        // console.log(img);
     }
     // ファイル読み込み
     if(type == "HIKKOSHI"){
