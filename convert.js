@@ -17,13 +17,8 @@ async function main(type,number,trim=false) {
     let files = fs.readdirSync(logoDirectory).filter(file => file !=='.gitkeep');
     let file = files.filter(isNotJunk)[0]
     let extend = file.split(".").pop();
-    if(trim){
-        await sharp(logoDirectory+ '/' + file)
-            .trim()
-            .toFile(logoDirectory+ '/' + `tirm.${extend}`);
-        file=`tirm.${extend}`;
-    }
 
+    //NOTE: PDF化の関数
     async function toPDF(filePath,logoDirectory) {
         await pdfToPng(filePath ,{
             outputFolder: logoDirectory,
@@ -31,13 +26,30 @@ async function main(type,number,trim=false) {
     }
 
     if(extend === "pdf"){
-        //TODO: PDFの場合はPNGに変換する処理を加える
+        // NOTE: pdfをpngに変換する処理
+        // HACK: MACの場合はM1しか対応できない
         const filePath = logoDirectory + '/' + file;
-        toPDF(filePath,logoDirectory)
-        // file.replace('pdf','png');
-        // extend = 'png'
-        // console.log(img);
+        //PDFに変換
+        await toPDF(filePath,logoDirectory);
+        const copyfile = file;
+        file = file.replace(`.${extend}`,'_page_1.png');
+        extend = 'png'
+        //元ファイルをimg配下に移動させる（ここ同期的...）
+        fs.rename(filePath , `./img/${copyfile}`, (err) => {
+            if(err){
+                console.log('PDFファイルの移動エラーです、、、')
+            }
+        })
     }
+
+    if(trim){
+        //NOTE: 余白を取り除く処理
+        await sharp(logoDirectory+ '/' + file)
+            .trim()
+            .toFile(logoDirectory+ '/' + `tirm.${extend}`)
+        file=`tirm.${extend}`;
+    }
+
     // ファイル読み込み
     if(type == "HIKKOSHI"){
         // TODO: 拡張子対応しなければ
